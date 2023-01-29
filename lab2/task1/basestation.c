@@ -8,7 +8,7 @@
 #define SHAKE_EVENT 1
 #define CLICK_EVENT 2
 
-#define LED_INT_ONTIME CLOCK_SECOND * 2
+#define LED_INT_ONTIME CLOCK_SECOND * 5
 static process_event_t ledOff_event;
 static int triggers = 0;
 
@@ -44,21 +44,23 @@ PROCESS_THREAD(led_process, ev, data)
 static void recv(const void *data, uint16_t len,
                  const linkaddr_t *src, const linkaddr_t *dest)
 {
-  const char *msg = (const char *) data;
-  if(*msg == 'c') {
+  //const char *msg = (const char *) data;
+  //if(*msg == 'c') {
+  if(len == 7) {
     // click event
     triggers |= CLICK_EVENT;
-  } else if(*msg == 's') {
+  //} else if(*msg == 's') {
+  } else if(len == 6) {
     // shake event
     triggers |= SHAKE_EVENT;
   }
-  if(triggers & SHAKE_EVENT)
+  /*if(triggers & SHAKE_EVENT)
     leds_on(LEDS_LED1);
   if( triggers & CLICK_EVENT)
     leds_on(LEDS_LED2);
   if(triggers == (SHAKE_EVENT | CLICK_EVENT))
-    leds_on(LEDS_LED3);
-  leds_on(LEDS_LED4);
+    leds_on(LEDS_LED3);*/
+  leds_on(triggers);
   process_post(&led_process, ledOff_event, NULL);
 }
 

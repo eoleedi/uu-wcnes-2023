@@ -62,7 +62,7 @@ PROCESS_THREAD(intrusion_detection_process, ev, data)
 
 /* Our main process. */
 PROCESS_THREAD(clicker_process, ev, data) {
-	static char payload_click[] = "click";
+	static char payload_click[] = "clicks";
 
 	PROCESS_BEGIN();
 
@@ -92,7 +92,7 @@ PROCESS_THREAD(clicker_process, ev, data) {
 
 		/* Send the content of the packet buffer using the
 		 * broadcast handle. */
-		 printf("Send msg '%s'\r\n", nullnet_buf);
+		 printf("Send msg '%s' len %d\r\n", nullnet_buf, nullnet_len);
 		NETSTACK_NETWORK.output(NULL);
 	}
 
@@ -122,7 +122,7 @@ PROCESS_THREAD(client_process, ev, data)
 		nullnet_len = sizeof(payload_shake);
 		/* Send the content of the packet buffer using the
 		 * broadcast handle. */
-		 printf("Send msg '%s'\r\n", nullnet_buf);
+		 printf("Send msg '%s' len %d\r\n", nullnet_buf, nullnet_len);
 		NETSTACK_NETWORK.output(NULL);
 	}
 
