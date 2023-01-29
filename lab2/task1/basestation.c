@@ -57,9 +57,9 @@ static void recv(const void *data, uint16_t len,
   /*if(triggers & SHAKE_EVENT)
     leds_on(LEDS_LED1);
   if( triggers & CLICK_EVENT)
-    leds_on(LEDS_LED2);
+    leds_on(LEDS_LED2);*/
   if(triggers == (SHAKE_EVENT | CLICK_EVENT))
-    leds_on(LEDS_LED3);*/
+    triggers |= 4;
   leds_on(triggers);
   process_post(&led_process, ledOff_event, NULL);
 }
