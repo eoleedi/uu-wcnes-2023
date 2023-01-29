@@ -5,8 +5,12 @@
 #include "net/netstack.h"
 #include "net/nullnet/nullnet.h"
 
-#define LED_INT_ONTIME CLOCK_SECOND * 10
+#define SHAKE_EVENT 1
+#define CLICK_EVENT 2
+
+#define LED_INT_ONTIME CLOCK_SECOND * 2
 static process_event_t ledOff_event;
+static int triggers = 0;
 
 /* Declare our "main" process, the basestation_process */
 PROCESS(basestation_process, "Clicker basestation");
@@ -25,6 +29,7 @@ PROCESS_THREAD(led_process, ev, data)
     etimer_set(&ledETimer, LED_INT_ONTIME);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ledETimer));
     leds_off(LEDS_ALL);
+    triggers = 0;
   }
   PROCESS_END();
 }
@@ -39,7 +44,21 @@ PROCESS_THREAD(led_process, ev, data)
 static void recv(const void *data, uint16_t len,
                  const linkaddr_t *src, const linkaddr_t *dest)
 {
-  leds_on(LEDS_GREEN);
+  const char *msg = (const char *) data;
+  if(*msg == 'c') {
+    // click event
+    triggers |= CLICK_EVENT;
+  } else if(*msg == 's') {
+    // shake event
+    triggers |= SHAKE_EVENT;
+  }
+  if(triggers & SHAKE_EVENT)
+    leds_on(LEDS_LED1);
+  if( triggers & CLICK_EVENT)
+    leds_on(LEDS_LED2);
+  if(triggers == (SHAKE_EVENT | CLICK_EVENT))
+    leds_on(LEDS_LED3);
+  leds_on(LEDS_LED4);
   process_post(&led_process, ledOff_event, NULL);
 }
 
